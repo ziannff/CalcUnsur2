@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Calc Unsur</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+<style>
+    body, html {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: 'Roboto', sans-serif;
+        background-color: #f6f5f5; /* Warna latar belakang */
+    }
+
+    .container {
+        width: 600px;
+        text-align: center;
+        padding: 20px;
+        background-color: #DCA18F; /* Warna background untuk box */
+        border-radius: 15px; /* Tepian melengkung */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Efek bayangan */
+        margin: 20px;
+    }
+
+    .search-box {
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+        width: calc(100% - 40px);
+        padding: 12px 20px;
+        margin: 8px 0;
+        border-radius: 20px;
+        border: 2px solid #E2C9CF; /* Warnu border yang lembut */
+        box-sizing: border-box;
+        transition: border-color 0.3s; /* Efek transisi pada border input */
+    }
+
+    input[type="text"]:focus {
+        border-color: #B9828A; /* Warna border saat input difokuskan */
+    }
+
+    button {
+        padding: 10px;
+        background-color: #E2C9CF; /* Warna tombol */
+        color: black;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.3s; /* Efek transisi pada tombol */
+    }
+
+    button:hover {
+        background-color: #F0D0C1;
+        transform: translateY(-3px); /* Efek hover 'mengangkat' tombol */
+    }
+
+    .judul {
+        color: #F4DADB; /* Warna judul yang menarik */
+        margin: 20px 0;
+        font-size: 2em; /* Ukuran font yang lebih besar */
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="judul">Calc Unsur</div>
+    <div class="search-box">
+        <input type="text" id="inputSimbol" placeholder="Masukkan Nama Unsur (Menggunakan huruf besar semua ex. HE, CL, MN) ...">
+        <button onclick="cariUnsur()">Cari</button>
+    </div>
+    <div id="hasilNamaUnsur"></div>
+    <div id="hasilNomorAtom"></div>
+    <div id="hasilKonfigurasiElektron"></div>
+</div>
+
+<script>
+const elemenData = {
+     "H": { namaUnsur: "Hidrogen (H)", nomorAtom: 1, konfigurasiElektron: "1s1" },
+    "HE": { namaUnsur: "Helium (He)", nomorAtom: 2, konfigurasiElektron: "1s2" },
+    "LI": { namaUnsur: "Litium (Li)", nomorAtom: 3, konfigurasiElektron: "1s2 2s1" },
+    "BE": { namaUnsur: "Berillium (Be)", nomorAtom: 4, konfigurasiElektron: "1s2 2s2" },
+    "B": { namaUnsur: "Boron (B)", nomorAtom: 5, konfigurasiElektron: "1s2 2s2 2p1" },
+    "C": { namaUnsur: "Karbon (C)", nomorAtom: 6, konfigurasiElektron: "1s2 2s2 2p2" },
+    "N": { namaUnsur: "Nitrogen (N)", nomorAtom: 7, konfigurasiElektron: "1s2 2s2 2p3" },
+    "O": { namaUnsur: "Oksigen (O)", nomorAtom: 8, konfigurasiElektron: "1s2 2s2 2p4" },
+    "F": { namaUnsur: "Fluorin (F)", nomorAtom: 9, konfigurasiElektron: "1s2 2s2 2p5" },
+    "NE": { namaUnsur: "Neon (Ne)", nomorAtom: 10, konfigurasiElektron: "1s2 2s2 2p6" },
+    "NA": { namaUnsur: "Natrium (Na)", nomorAtom: 11, konfigurasiElektron: "1s2 2s2 2p6 3s1" },
+    "MG": { namaUnsur: "Magnesium (Mg)", nomorAtom: 12, konfigurasiElektron: "1s2 2s2 2p6 3s2" },
+    "AL": { namaUnsur: "Aluminium (Al)", nomorAtom: 13, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p1" },
+    "SI": { namaUnsur: "Silikon (Si)", nomorAtom: 14, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p2" },
+    "P": { namaUnsur: "Fosfor (P)", nomorAtom: 15, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p3" },
+    "S": { namaUnsur: "Sulfur (S)", nomorAtom: 16, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p4" },
+    "CL": { namaUnsur: "Klorin (Cl)", nomorAtom: 17, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p5" },
+    "AR": { namaUnsur: "Argon (Ar)", nomorAtom: 18, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6" },
+    "K": { namaUnsur: "Kalium (K)", nomorAtom: 19, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s1" },
+    "CA": { namaUnsur: "Kalsium (Ca)", nomorAtom: 20, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2" },
+    "SC": { namaUnsur: "Skandium (Sc)", nomorAtom: 21, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d1" },
+    "TI": { namaUnsur: "Titanium (Ti)", nomorAtom: 22, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d2" },
+    "V": { namaUnsur: "Vanadium (V)", nomorAtom: 23, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d3" },
+    "CR": { namaUnsur: "Krom (Cr)", nomorAtom: 24, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s1 3d5" },
+    "MN": { namaUnsur: "Mangan (Mn)", nomorAtom: 25, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d5" },
+    "FE": { namaUnsur: "Besi (Fe)", nomorAtom: 26, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d6" },
+    "CO": { namaUnsur: "Kobalt (Co)", nomorAtom: 27, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d7" },
+    "NI": { namaUnsur: "Nikel (Ni)", nomorAtom: 28, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d8" },
+    "CU": { namaUnsur: "Tembaga (Cu)", nomorAtom: 29, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s1 3d10" },
+    "ZN": { namaUnsur: "Seng (Zn)", nomorAtom: 30, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10" },
+    "GA": { namaUnsur: "Galium (Ga)", nomorAtom: 31, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p1" },
+    "GE": { namaUnsur: "Germanium (Ge)", nomorAtom: 32, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p2" },
+    "AS": { namaUnsur: "Arsen (As)", nomorAtom: 33, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p3" },
+    "SE": { namaUnsur: "Selenium (Se)", nomorAtom: 34, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p4" },
+    "BR": { namaUnsur: "Brom (Br)", nomorAtom: 35, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p5" },
+    "KR": { namaUnsur: "Kripton (Kr)", nomorAtom: 36, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6" },
+    "RB": { namaUnsur: "Rubidium (Rb)", nomorAtom: 37, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s1" },
+    "SR": { namaUnsur: "Strontium (Sr)", nomorAtom: 38, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2" },
+    "Y": { namaUnsur: "Itrium (Y)", nomorAtom: 39, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d1" },
+    "ZR": { namaUnsur: "Zirkonium (Zr)", nomorAtom: 40, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d2" },
+    "NB": { namaUnsur: "Niobium (Nb)", nomorAtom: 41, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s1 4d4" },
+    "MO": { namaUnsur: "Molibden (Mo)", nomorAtom: 42, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s1 4d5" },
+    "TC": { namaUnsur: "Teknesi (Tc)", nomorAtom: 43, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d5" },
+    "RU": { namaUnsur: "Rutenium (Ru)", nomorAtom: 44, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s1 4d7" },
+    "RH": { namaUnsur: "Rodium (Rh)", nomorAtom: 45, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s1 4d8" },
+    "PD": { namaUnsur: "Paladium (Pd)", nomorAtom: 46, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 4d10" },
+    "AG": { namaUnsur: "Perak (Ag)", nomorAtom: 47, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s1 4d10 5p6" },
+    "CD": { namaUnsur: "Kadmium (Cd)", nomorAtom: 48, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10" },
+    "IN": { namaUnsur: "Indium (In)", nomorAtom: 49, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p1" },
+    "SN": { namaUnsur: "Timah (Sn)", nomorAtom: 50, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p2" },
+    "SB": { namaUnsur: "Antimon (Sb)", nomorAtom: 51, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p3" },
+    "TE": { namaUnsur: "Telur (Te)", nomorAtom: 52, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p4" },
+    "I": { namaUnsur: "Yodium (I)", nomorAtom: 53, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p5" },
+    "XE": { namaUnsur: "Xenon (Xe)", nomorAtom: 54, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6" },
+    "CS": { namaUnsur: "Sesium (Cs)", nomorAtom: 55, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s1" },
+    "BA": { namaUnsur: "Barium (Ba)", nomorAtom: 56, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2" },
+    "LA": { namaUnsur: "Lantanum (La)", nomorAtom: 57, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 5d1" },
+    "CE": { namaUnsur: "Serium (Ce)", nomorAtom: 58, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 5d1 4f1" },
+    "PR": { namaUnsur: "Praseodimium (Pr)", nomorAtom: 59, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f3" },
+    "ND": { namaUnsur: "Neodimium (Nd)", nomorAtom: 60, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f4" },
+    "PM": { namaUnsur: "Prometium (Pm)", nomorAtom: 61, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f5" },
+    "SM": { namaUnsur: "Samarium (Sm)", nomorAtom: 62, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f6" },
+    "EU": { namaUnsur: "Europium (Eu)", nomorAtom: 63, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f7" },
+    "GD": { namaUnsur: "Gadolinium (Gd)", nomorAtom: 64, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f7 5d1" },
+    "TB": { namaUnsur: "Terbium (Tb)", nomorAtom: 65, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f9" },
+    "DY": { namaUnsur: "Disprosium (Dy)", nomorAtom: 66, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f10" },
+    "HO": { namaUnsur: "Holmium (Ho)", nomorAtom: 67, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f11" },
+    "ER": { namaUnsur: "Erbium (Er)", nomorAtom: 68, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f12" },
+    "TM": { namaUnsur: "Tulium (Tm)", nomorAtom: 69, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f13" },
+    "YB": { namaUnsur: "Iterbium (Yb)", nomorAtom: 70, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14" },
+    "LU": { namaUnsur: "Lutetium (Lu)", nomorAtom: 71, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d1" },
+    "HF": { namaUnsur: "Hafnium (Hf)", nomorAtom: 72, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d2" },
+    "TA": { namaUnsur: "Tanta lum (Ta)", nomorAtom: 73, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d3" },
+    "W": { namaUnsur: "Wolfram (W)", nomorAtom: 74, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d4" },
+    "RE": { namaUnsur: "Renium (Re)", nomorAtom: 75, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d5" },
+    "OS": { namaUnsur: "Osmium (Os)", nomorAtom: 76, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d6" },
+    "IR": { namaUnsur: "Iridium (Ir)", nomorAtom: 77, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d7" },
+    "PT": { namaUnsur: "Platinum (Pt)", nomorAtom: 78, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s1 4f14 5d9" },
+    "AU": { namaUnsur: "Emas (Au)", nomorAtom: 79, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s1 4f14 5d10" },
+    "HG": { namaUnsur: "Raksa (Hg)", nomorAtom: 80, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10" },
+    "TL": { namaUnsur: "Talium (Tl)", nomorAtom: 81, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p1" },
+    "PB": { namaUnsur: "Timbal (Pb)", nomorAtom: 82, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p2" },
+     "BI": { namaUnsur: "Bismut (Bi)", nomorAtom: 83, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p3" },
+    "PO": { namaUnsur: "Polonium (Po)", nomorAtom: 84, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p4" },
+    "AT": { namaUnsur: "Astatin (At)", nomorAtom: 85, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p5" },
+    "RN": { namaUnsur: "Radon (Rn)", nomorAtom: 86, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6" },
+    "FR": { namaUnsur: "Fransium (Fr)", nomorAtom: 87, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6 7s1" },
+    "RA": { namaUnsur: "Radium (Ra)", nomorAtom: 88, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6 7s2" },
+    "AC": { namaUnsur: "Aktinium (Ac)", nomorAtom: 89, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6 7s2 6d1" },
+    "TH": { namaUnsur: "Torium (Th)", nomorAtom: 90, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6 7s2 6d2" },
+    "PA": { namaUnsur: "Protaktinium (Pa)", nomorAtom: 91, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6 7s2 5f2 6d1" },
+    "U": { namaUnsur: "Uranium (U)", nomorAtom: 92, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6 7s2 5f3 6d1" },
+    "NP": { namaUnsur: "Neptunium (Np)", nomorAtom: 93, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6 7s2 5f4 6d1" },
+    "PU": { namaUnsur: "Plutonium (Pu)", nomorAtom: 94, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6 7s2 5f6" },
+    "AM": { namaUnsur: "Americium (Am)", nomorAtom: 95, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6 7s2 5f7" },
+    "CM": { namaUnsur: "Curium (Cm)", nomorAtom: 96, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6 7s2 5f7 6d1" },
+    "BK": { namaUnsur: "Berkelium (Bk)", nomorAtom: 97, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6 7s2 5f9" },
+    "CF": { namaUnsur: "Californium (Cf)", nomorAtom: 98, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6 7s2 5f10" },
+    "ES": { namaUnsur: "Einsteinium (Es)", nomorAtom: 99, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6 7s2 5f11" },
+    "FM": { namaUnsur: "Fermium (Fm)", nomorAtom: 100, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6 7s2 5f12" },
+    "MD": { namaUnsur: "Mendelevium (Md)", nomorAtom: 101, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6 7s2 5f13" },
+    "NO": { namaUnsur: "Nobelium (No)", nomorAtom: 102, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6 7s2 5f14" },
+    "LR": { namaUnsur: "Lawrensium (Lr)", nomorAtom: 103, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6 7s2 5f14 7p1" },
+    "RF": { namaUnsur: "Rutherfordium (Rf)", nomorAtom: 104, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6 7s2 5f14 6d2" },
+    "DB": { namaUnsur: "Dubnium (Db)", nomorAtom: 105, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6 7s2 5f14 6d3" },
+    "SG": { namaUnsur: "Seaborgium (Sg)", nomorAtom: 106, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6 7s2 5f14 6d4" },
+    "BH": { namaUnsur: "Bohrium (Bh)", nomorAtom: 107, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6 7s2 5f14 6d5" },
+    "HS": { namaUnsur: "Hassium (Hs)", nomorAtom: 108, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6 7s2 5f14 6d6" },
+    "MT": { namaUnsur: "Meitnerium (Mt)", nomorAtom: 109, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6 7s2 5f14 6d7" },
+    "DS": { namaUnsur: "Darmstadtium (Ds)", nomorAtom: 110, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6 7s2 5f14 6d8" },
+    "RG": { namaUnsur: "Roentgenium (Rg)", nomorAtom: 111, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6 7s2 5f14 6d9" },
+    "CN": { namaUnsur: "Copernicium (Cn)", nomorAtom: 112, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6 7s2 5f14 6d10" },
+    "NH": { namaUnsur: "Nihonium (Nh)", nomorAtom: 113, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6 7s2 5f14 6d10 7p1" },
+    "FL": { namaUnsur: "Flerovium (Fl)", nomorAtom: 114, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6 7s2 5f14 6d10 7p2" },
+    "MC": { namaUnsur: "Moscovium (Mc)", nomorAtom: 115, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6 7s2 5f14 6d10 7p3" },
+    "LV": { namaUnsur: "Livermorium (Lv)", nomorAtom: 116, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6 7s2 5f14 6d10 7p4" },
+    "TS": { namaUnsur: "Tennessine (Ts)", nomorAtom: 117, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6 7s2 5f14 6d10 7p5" },
+    "OG": { namaUnsur: "Oganeson (Og)", nomorAtom: 118, konfigurasiElektron: "1s2 2s2 2p6 3s2 3p6 4s2 3d10 4p6 5s2 4d10 5p6 6s2 4f14 5d10 6p6 7s2 5f14 6d10 7p6" }
+};
+
+function cariUnsur() {
+    const simbol = document.getElementById("inputSimbol").value.toUpperCase();
+    const hasilNamaUnsur = document.getElementById("hasilNamaUnsur");
+    const hasilNomorAtom = document.getElementById("hasilNomorAtom");
+    const hasilKonfigurasiElektron = document.getElementById("hasilKonfigurasiElektron");
+
+    if (elemenData[simbol]) {
+        hasilNamaUnsur.textContent = "Nama Unsur: " + elemenData[simbol].namaUnsur;
+        hasilNomorAtom.textContent = "Nomor Atom: " + elemenData[simbol].nomorAtom;
+        hasilKonfigurasiElektron.textContent = "Konfigurasi Elektron: " + elemenData[simbol].konfigurasiElektron;
+    } else {
+        hasilNamaUnsur.textContent = "Unsur tidak ditemukan.";
+        hasilNomorAtom.textContent = "";
+        hasilKonfigurasiElektron.textContent = "";
+    }
+}
+</script>
+
+</body>
+</html>
